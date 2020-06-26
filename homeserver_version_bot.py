@@ -72,6 +72,7 @@ class Matrix:
         self.room_id = None
         self.room_url = None
 
+
     def api_call(self, method, url, data=None):
         """
         Call the API with the parameter defined.
@@ -89,6 +90,7 @@ class Matrix:
             return ''
 
         return req.text
+
 
     def login(self, username, password):
         """
@@ -155,9 +157,9 @@ class Matrix:
             f'{self.room_url}/send/m.room.message/{time.time()}',
             data=f'{{'
                  f'"msgtype": "m.text",'
-                 f'"body": "",'
+                 f'"body": "{text}",'
                  f'"format": "org.matrix.custom.html",'
-                 f'"formatted_body": "{text}"'
+                 f'"formatted_body": "<pre><code>{text}</code></pre>"'
                  f'}}',
         )
 
@@ -215,10 +217,6 @@ if __name__ == '__main__':
                 }
             )
 
-        version_table = '<pre><code>'
-        version_table += str(srvlst)
-        version_table += '</code></pre>'
-
-        matrix.message(version_table)
+        matrix.message(str(srvlst))
 
     main()
