@@ -155,12 +155,14 @@ class Matrix:
         self.api_call(
             requests.put,
             f'{self.room_url}/send/m.room.message/{time.time()}',
-            data=f'{{'
-                 f'"msgtype": "m.text",'
-                 f'"body": "{text}",'
-                 f'"format": "org.matrix.custom.html",'
-                 f'"formatted_body": "<pre><code>{text}</code></pre>"'
-                 f'}}',
+            data=f'''
+                {{
+                    "msgtype": "m.text",
+                    "body": "{text}",
+                    "format": "org.matrix.custom.html",
+                    "formatted_body": "<pre><code>{text}</code></pre>"
+                }}
+            '''
         )
 
 
@@ -169,24 +171,35 @@ class ServerList(list):
     Class to handle the list of servers
     """
     def __str__(self):
+        server_title = 'Homeserver'
+        version_title = 'Version'
+
         maxlen_server = max(
-            len('Homeserver'),
+            len(server_title),
             len(max(self, key=lambda i: len(i['host']))['host'])
         )
         maxlen_version = max(
-            len('Version'),
+            len(version_title),
             len(max(self, key=lambda i: len(i['version']))['version'])
         )
 
-        version_table = ''
-        version_table += f'| {"Homeserver".ljust(maxlen_server)} | '
-        version_table += f'{"Version".ljust(maxlen_version)} |\\n'
-        version_table += f'| {"".ljust(maxlen_server, "-")} | '
-        version_table += f'{"".ljust(maxlen_version, "-")} |\\n'
+        version_table = '| {} | {} |\\n'.format(
+            server_title.ljust(maxlen_server),
+            version_title.ljust(maxlen_version)
+        )
+        version_table += '| {} | {} |\\n'.format(
+            ''.ljust(maxlen_server, "-"),
+            ''.ljust(maxlen_version, "-")
+        )
+
         for server in self:
-            version_table += f'| {server["host"].ljust(maxlen_server)} | '
-            version_table += f'<a href=\\"{FEDTEST_URL}{server["host"]}\\">{server["version"]}</a>'
-            version_table += f'{"".ljust(maxlen_version - len(server["version"]))} |\\n'
+            version_table += '| {} | <a href=\\"{}{}\\">{}</a>{} |\\n'.format(
+                server['host'].ljust(maxlen_server),
+                FEDTEST_URL,
+                server['host'],
+                server['version'],
+                ''.ljust(maxlen_version - len(server['version']))
+            )
 
         return str(version_table)
 
