@@ -169,16 +169,24 @@ class ServerList(list):
     Class to handle the list of servers
     """
     def __str__(self):
-        maxlen_server = len(max(self, key=lambda i: len(i['host']))['host'])
-        maxlen_version = len(max(self, key=lambda i: len(i['version']))['version'])
+        maxlen_server = max(
+            len('Homeserver'),
+            len(max(self, key=lambda i: len(i['host']))['host'])
+        )
+        maxlen_version = max(
+            len('Version'),
+            len(max(self, key=lambda i: len(i['version']))['version'])
+        )
 
         version_table = ''
-        version_table += f'| {"Homeserver".ljust(maxlen_server)} | {"Version".ljust(maxlen_version)} |\\n'
-        version_table += '| ' + ('-' * maxlen_server) + ' | ' + ('-' * maxlen_version) + ' |\\n'
+        version_table += f'| {"Homeserver".ljust(maxlen_server)} | '
+        version_table += f'{"Version".ljust(maxlen_version)} |\\n'
+        version_table += f'| {"".ljust(maxlen_server, "-")} | '
+        version_table += f'{"".ljust(maxlen_version, "-")} |\\n'
         for server in self:
             version_table += f'| {server["host"].ljust(maxlen_server)} | '
             version_table += f'<a href=\\"{FEDTEST_URL}{server["host"]}\\">{server["version"]}</a>'
-            version_table += (" " * (maxlen_version - len(server['version']))) + ' |\\n'
+            version_table += f'{"".ljust(maxlen_version - len(server["version"]))} |\\n'
 
         return str(version_table)
 
